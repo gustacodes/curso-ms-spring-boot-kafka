@@ -11,7 +11,6 @@ import java.util.UUID;
 public class ServicoBancarioClient {
 
     public String solicitarPagamento(Pedido pedido) {
-        log.info("Solicitando pagamento para o pedido de código {} ", pedido.getCodigo());
         return UUID.randomUUID().toString();
     }
 }

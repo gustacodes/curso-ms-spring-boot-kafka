@@ -2,6 +2,8 @@ package io.github.gustacodes.icompras.pedidos.controller;
 
 import io.github.gustacodes.icompras.pedidos.controller.dto.NovoPedidoDTO;
 import io.github.gustacodes.icompras.pedidos.controller.mapper.PedidoMapper;
+import io.github.gustacodes.icompras.pedidos.model.ErroResposta;
+import io.github.gustacodes.icompras.pedidos.model.exception.ValidationException;
 import io.github.gustacodes.icompras.pedidos.service.PedidoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,13 @@ public class PedidoController {
 
     @PostMapping
     public ResponseEntity<Object> criar(@RequestBody NovoPedidoDTO novoPedidoDTO) {
-        var pedido = mapper.map(novoPedidoDTO);
-        var novoPedido = pedidoService.criarPedido(pedido);
-        return ResponseEntity.ok().body(novoPedido.getCodigo());
+        try {
+            var pedido = mapper.map(novoPedidoDTO);
+            var novoPedido = pedidoService.criarPedido(pedido);
+            return ResponseEntity.ok().body(novoPedido.getCodigo());
+        } catch (ValidationException e) {
+            var erro = new ErroResposta("Erro de validação", e.getField(), e.getMessage());
+            return ResponseEntity.badRequest().body(erro);
+        }
     }
 }

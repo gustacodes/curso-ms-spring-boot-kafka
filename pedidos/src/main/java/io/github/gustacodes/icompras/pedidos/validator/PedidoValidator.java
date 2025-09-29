@@ -1,12 +1,50 @@
 package io.github.gustacodes.icompras.pedidos.validator;
 
+import feign.FeignException;
+import io.github.gustacodes.icompras.pedidos.client.ClientesClient;
+import io.github.gustacodes.icompras.pedidos.client.ProdutosClient;
+import io.github.gustacodes.icompras.pedidos.client.representation.ClienteRepresentation;
+import io.github.gustacodes.icompras.pedidos.client.representation.ProdutoRepresentation;
+import io.github.gustacodes.icompras.pedidos.model.ItemPedido;
 import io.github.gustacodes.icompras.pedidos.model.Pedido;
+import io.github.gustacodes.icompras.pedidos.model.exception.ValidationException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class PedidoValidator {
 
-    public void validar(Pedido pedido) {
+    private final ProdutosClient produtosClient;
+    private final ClientesClient clientesClient;
 
+    public void validar(Pedido pedido) {
+        Long codigoCliente = pedido.getCodigoCliente();
+        validarCliente(codigoCliente);
+        pedido.getItens().forEach(this::validarItem);
+    }
+
+    private void validarCliente(Long codigoCliente) {
+        try {
+            var response = clientesClient.findById(codigoCliente);
+            ClienteRepresentation cliente = response.getBody();
+            log.info("Cliente de código {} encontrado: {} ", cliente.codigo(), cliente.nome());
+        } catch (FeignException.NotFound e) {
+            var message = String.format("Cliente de código %d não encontrado", codigoCliente);
+            throw new ValidationException("codigoCliente", message);
+        }
+    }
+
+    private void validarItem(ItemPedido item) {
+        try {
+            var response = produtosClient.findById(item.getCodigoProduto());
+            ProdutoRepresentation produto = response.getBody();
+            log.info("Produto de código {} encontrado: {} ", produto.codigo(), produto.nome());
+        } catch (FeignException.NotFound e) {
+            var message = String.format("Produto de código %d não encontrado", item.getCodigoProduto());
+            throw new ValidationException("codigoProduto", message);
+        }
     }
 }
