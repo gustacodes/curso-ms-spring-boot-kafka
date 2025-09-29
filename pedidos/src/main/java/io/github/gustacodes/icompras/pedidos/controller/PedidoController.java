@@ -1,8 +1,10 @@
 package io.github.gustacodes.icompras.pedidos.controller;
 
+import io.github.gustacodes.icompras.pedidos.controller.dto.AdicaoNovoPagamentoDTO;
 import io.github.gustacodes.icompras.pedidos.controller.dto.NovoPedidoDTO;
 import io.github.gustacodes.icompras.pedidos.controller.mapper.PedidoMapper;
 import io.github.gustacodes.icompras.pedidos.model.ErroResposta;
+import io.github.gustacodes.icompras.pedidos.model.exception.ItemNaoEncontradoException;
 import io.github.gustacodes.icompras.pedidos.model.exception.ValidationException;
 import io.github.gustacodes.icompras.pedidos.service.PedidoService;
 import lombok.RequiredArgsConstructor;
@@ -31,4 +33,19 @@ public class PedidoController {
             return ResponseEntity.badRequest().body(erro);
         }
     }
+
+    @PostMapping("/pagamentos")
+    public ResponseEntity<Object> adicionarNovoPagamento(@RequestBody AdicaoNovoPagamentoDTO adicaoNovoPagamentoDTO) {
+        try {
+            pedidoService.adicionarNovoPagamento(
+                    adicaoNovoPagamentoDTO.codigoPedido(),
+                    adicaoNovoPagamentoDTO.dados(),
+                    adicaoNovoPagamentoDTO.tipoPagamento());
+            return ResponseEntity.noContent().build();
+        } catch (ItemNaoEncontradoException e) {
+            var error = new ErroResposta("Item não encontrado", "codigoPedido", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
 }
