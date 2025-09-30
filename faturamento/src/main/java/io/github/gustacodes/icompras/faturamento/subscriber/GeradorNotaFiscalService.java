@@ -20,7 +20,7 @@ public class GeradorNotaFiscalService {
     private final BucketService bucketService;
 
     public void gerar(Pedido pedido) {
-        log.info("Gerada nota fiscal para o pedido {} ", pedido.codigo());
+        log.info("Gerando nota fiscal para o pedido {} ", pedido.codigo());
         byte[] byteArray = notaFiscalService.gerarNota(pedido);
 
         try {
@@ -33,6 +33,7 @@ public class GeradorNotaFiscalService {
                     byteArray.length);
 
             bucketService.upload(file);
+            log.info("Gerada a nota fiscal, nome do arquivo {} ", nomeArquivo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

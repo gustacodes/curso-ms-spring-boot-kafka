@@ -33,6 +33,7 @@ public class NotaFiscalService {
             params.put("TELEFONE", pedido.cliente().telefone());
             params.put("DATA_PEDIDO", pedido.data());
             params.put("TOTAL_PEDIDO", pedido.total());
+            params.put("LOGO", logo.getFile().getAbsolutePath());
 
             var dataSource = new JRBeanCollectionDataSource(pedido.itens());
 
