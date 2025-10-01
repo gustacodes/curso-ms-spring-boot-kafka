@@ -3,6 +3,7 @@ package io.github.gustacodes.icompras.faturamento.subscriber;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.gustacodes.icompras.faturamento.mapper.PedidoMapper;
 import io.github.gustacodes.icompras.faturamento.model.Pedido;
+import io.github.gustacodes.icompras.faturamento.service.GeradorNotaFiscalService;
 import io.github.gustacodes.icompras.faturamento.subscriber.representation.DetalhePedidoRepresentation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
